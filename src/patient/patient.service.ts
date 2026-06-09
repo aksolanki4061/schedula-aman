@@ -14,7 +14,13 @@ import {
 
 @Injectable()
 export class PatientService {
-  private readonly restrictedFields = new Set(['id', 'userId', 'user', 'createdAt', 'updatedAt']);
+  private readonly restrictedFields = new Set([
+    'id',
+    'userId',
+    'user',
+    'createdAt',
+    'updatedAt',
+  ]);
 
   constructor(
     @InjectRepository(PatientProfile)
@@ -63,7 +69,8 @@ export class PatientService {
     if (dto.fullName !== undefined) updates.fullName = dto.fullName.trim();
     if (dto.age !== undefined) updates.age = dto.age;
     if (dto.gender !== undefined) updates.gender = dto.gender.trim();
-    if (dto.contactDetails !== undefined) updates.contactDetails = dto.contactDetails;
+    if (dto.contactDetails !== undefined)
+      updates.contactDetails = dto.contactDetails;
     if (dto.basicHealthInformation !== undefined) {
       updates.basicHealthInformation = dto.basicHealthInformation;
     }
@@ -93,7 +100,8 @@ export class PatientService {
       throw new BadRequestException('at least one field is required');
     }
 
-    if (dto.fullName !== undefined) this.validateString(dto.fullName, 'fullName');
+    if (dto.fullName !== undefined)
+      this.validateString(dto.fullName, 'fullName');
     if (dto.age !== undefined) this.validatePositiveInteger(dto.age, 'age');
     if (dto.gender !== undefined) this.validateString(dto.gender, 'gender');
     if (dto.contactDetails !== undefined) {
