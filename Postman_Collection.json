@@ -1,0 +1,495 @@
+{
+  "info": {
+    "_postman_id": "schedula-aman-backend",
+    "name": "Schedula Aman - Doctor & Patient Onboarding",
+    "description": "Complete API collection for Doctor and Patient profile management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 AUTHENTICATION",
+      "item": [
+        {
+          "name": "Doctor Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Sarah Johnson\",\n  \"email\": \"dr.sarah@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"role\": \"DOCTOR\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Patient Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@example.com\",\n  \"password\": \"PatientPass123!\",\n  \"role\": \"PATIENT\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dr.sarah@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 DOCTOR PROFILE",
+      "item": [
+        {
+          "name": "Create Doctor Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Sarah Johnson\",\n  \"specialization\": \"Cardiology\",\n  \"experience\": 10,\n  \"qualification\": \"MD, Board Certified Cardiologist\",\n  \"consultationFee\": 150.00,\n  \"availability\": {\n    \"Monday\": \"09:00-17:00\",\n    \"Tuesday\": \"09:00-17:00\",\n    \"Wednesday\": \"09:00-17:00\",\n    \"Thursday\": \"09:00-17:00\",\n    \"Friday\": \"09:00-17:00\"\n  },\n  \"profileDetails\": \"Experienced cardiologist with 10 years of clinical practice\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Doctor Profile - Consultation Fee",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationFee\": 200.00\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Doctor Profile - Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability\": {\n    \"Monday\": \"10:00-18:00\",\n    \"Tuesday\": \"10:00-18:00\",\n    \"Wednesday\": \"10:00-18:00\",\n    \"Thursday\": \"10:00-18:00\",\n    \"Friday\": \"10:00-18:00\",\n    \"Saturday\": \"10:00-14:00\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Doctor Profile - Multiple Fields",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationFee\": 250.00,\n  \"experience\": 12,\n  \"profileDetails\": \"Updated 2026: Specializing in advanced cardiac diagnostics\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍⚕️ PATIENT PROFILE",
+      "item": [
+        {
+          "name": "Create Patient Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Smith\",\n  \"age\": 35,\n  \"gender\": \"Male\",\n  \"contactDetails\": {\n    \"phone\": \"+1-555-0123\",\n    \"email\": \"john.smith@example.com\"\n  },\n  \"basicHealthInformation\": {\n    \"bloodType\": \"O+\",\n    \"allergies\": [\"Penicillin\"],\n    \"chronicConditions\": [\"Hypertension\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Patient Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Patient Profile - Age",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age\": 36\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Patient Profile - Health Info",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"basicHealthInformation\": {\n    \"bloodType\": \"O+\",\n    \"allergies\": [\"Penicillin\", \"Aspirin\"],\n    \"chronicConditions\": [\"Hypertension\", \"Diabetes\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Patient Profile - Multiple Fields",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age\": 37,\n  \"contactDetails\": {\n    \"phone\": \"+1-555-9999\",\n    \"email\": \"john.smith.updated@example.com\"\n  },\n  \"basicHealthInformation\": {\n    \"bloodType\": \"O+\",\n    \"allergies\": [\"Penicillin\", \"Aspirin\", \"Ibuprofen\"],\n    \"chronicConditions\": [\"Hypertension\", \"Diabetes\", \"Asthma\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚫 ERROR SCENARIOS",
+      "item": [
+        {
+          "name": "Doctor tries Patient API (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/patient/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["patient", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Patient tries Doctor API (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Token (401)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_xyz"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Profile Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Duplicate Profile (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Sarah Johnson\",\n  \"specialization\": \"Cardiology\",\n  \"experience\": 10,\n  \"qualification\": \"MD, Board Certified Cardiologist\",\n  \"consultationFee\": 150.00,\n  \"availability\": {\"Monday\": \"09:00-17:00\"},\n  \"profileDetails\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Missing Required Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{DOCTOR_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Test\",\n  \"experience\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/doctor/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "profile"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "DOCTOR_TOKEN",
+      "value": "paste_doctor_token_here",
+      "type": "string"
+    },
+    {
+      "key": "PATIENT_TOKEN",
+      "value": "paste_patient_token_here",
+      "type": "string"
+    }
+  ]
+}
