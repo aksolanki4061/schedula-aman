@@ -1,7 +1,8 @@
-# compiled output
+# compiled output (Vercel runs `vercel-build` script to generate this automatically)
 /dist
 /node_modules
 /build
+
 
 # Logs
 logs
