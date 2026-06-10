@@ -33,7 +33,12 @@ export class DoctorProfile {
   @Column()
   qualification: string;
 
-  @Column({ name: 'consultation_fee', type: 'numeric', precision: 10, scale: 2 })
+  @Column({
+    name: 'consultation_fee',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+  })
   consultationFee: string;
 
   @Column({ name: 'availability', type: 'jsonb' })

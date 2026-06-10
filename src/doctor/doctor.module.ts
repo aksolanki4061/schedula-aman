@@ -7,10 +7,7 @@ import { DoctorService } from './doctor.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([DoctorProfile]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([DoctorProfile]), AuthModule],
   controllers: [DoctorController],
   providers: [DoctorService],
 })

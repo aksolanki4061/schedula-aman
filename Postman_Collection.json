@@ -345,6 +345,178 @@
       ]
     },
     {
+      "name": "🔍 DOCTOR DISCOVERY",
+      "item": [
+        {
+          "name": "Get Doctors List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"]
+            }
+          }
+        },
+        {
+          "name": "Filter by Specialization",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?specialization=cardiologist",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "specialization",
+                  "value": "cardiologist"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?search=rahul",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "rahul"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter Availability = true",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?availability=true",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "availability",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter Availability = false",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?availability=false",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "availability",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Paginated List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?page=1&limit=2",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "🚫 ERROR SCENARIOS",
       "item": [
         {
@@ -474,6 +646,94 @@
               "host": ["localhost"],
               "port": "3000",
               "path": ["doctor", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Discovery: Invalid Doctor ID (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/abc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "abc"]
+            }
+          }
+        },
+        {
+          "name": "Discovery: Doctor Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor", "999"]
+            }
+          }
+        },
+        {
+          "name": "Discovery: Negative Page (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?page=-1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "-1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Discovery: Invalid Availability (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{PATIENT_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/doctor?availability=abc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["doctor"],
+              "query": [
+                {
+                  "key": "availability",
+                  "value": "abc"
+                }
+              ]
             }
           }
         }

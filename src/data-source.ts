@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { DoctorProfile } from './doctor/doctor-profile.entity';
 import { PatientProfile } from './patient/patient-profile.entity';

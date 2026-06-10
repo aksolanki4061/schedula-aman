@@ -6,7 +6,6 @@ import { UsersModule } from '../users/users.module';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RolesGuard } from '../roles/roles.guard';
 
-
 @Module({
   imports: [
     UsersModule,

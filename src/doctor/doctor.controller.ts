@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtUser } from '../auth/auth.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../roles/roles.decorator';
@@ -41,5 +51,26 @@ export class DoctorController {
       request.user.sub,
       updateDoctorProfileDto,
     );
+  }
+
+  @Get()
+  @Roles(UserRole.PATIENT, UserRole.DOCTOR)
+  getDoctors(
+    @Query()
+    query: {
+      specialization?: string;
+      search?: string;
+      page?: string;
+      limit?: string;
+      availability?: string;
+    },
+  ) {
+    return this.doctorService.getDoctors(query);
+  }
+
+  @Get(':id')
+  @Roles(UserRole.PATIENT, UserRole.DOCTOR)
+  getDoctorById(@Param('id') id: string) {
+    return this.doctorService.getDoctorById(id);
   }
 }

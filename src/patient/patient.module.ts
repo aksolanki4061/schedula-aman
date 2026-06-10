@@ -6,10 +6,7 @@ import { PatientService } from './patient.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([PatientProfile]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([PatientProfile]), AuthModule],
   controllers: [PatientController],
   providers: [PatientService],
 })

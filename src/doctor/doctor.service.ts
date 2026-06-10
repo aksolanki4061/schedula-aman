@@ -14,7 +14,13 @@ import {
 
 @Injectable()
 export class DoctorService {
-  private readonly restrictedFields = new Set(['id', 'userId', 'user', 'createdAt', 'updatedAt']);
+  private readonly restrictedFields = new Set([
+    'id',
+    'userId',
+    'user',
+    'createdAt',
+    'updatedAt',
+  ]);
 
   constructor(
     @InjectRepository(DoctorProfile)
@@ -63,20 +69,163 @@ export class DoctorService {
     const updates: Partial<DoctorProfile> = {};
 
     if (dto.fullName !== undefined) updates.fullName = dto.fullName.trim();
-    if (dto.specialization !== undefined) updates.specialization = dto.specialization.trim();
+    if (dto.specialization !== undefined)
+      updates.specialization = dto.specialization.trim();
     if (dto.experience !== undefined) updates.experience = dto.experience;
-    if (dto.qualification !== undefined) updates.qualification = dto.qualification.trim();
+    if (dto.qualification !== undefined)
+      updates.qualification = dto.qualification.trim();
     if (dto.consultationFee !== undefined) {
       updates.consultationFee = dto.consultationFee.toFixed(2);
     }
     if (dto.availability !== undefined) updates.availability = dto.availability;
     if (dto.profileDetails !== undefined) {
       updates.profileDetails =
-        dto.profileDetails === null ? null : this.optionalTrim(dto.profileDetails);
+        dto.profileDetails === null
+          ? null
+          : this.optionalTrim(dto.profileDetails);
     }
 
     Object.assign(profile, updates);
     return this.doctorProfilesRepository.save(profile);
+  }
+
+  async getDoctors(query: {
+    specialization?: string;
+    search?: string;
+    page?: string;
+    limit?: string;
+    availability?: string;
+  }) {
+    let pageNum = 1;
+    let limitNum = 10;
+
+    // Validate page
+    if (query.page !== undefined) {
+      const pageStr = String(query.page).trim();
+      pageNum = Number(pageStr);
+      if (
+        !/^\d+$/.test(pageStr) ||
+        !Number.isInteger(pageNum) ||
+        pageNum <= 0
+      ) {
+        throw new BadRequestException('page must be a positive integer');
+      }
+    }
+
+    // Validate limit
+    if (query.limit !== undefined) {
+      const limitStr = String(query.limit).trim();
+      limitNum = Number(limitStr);
+      if (
+        !/^\d+$/.test(limitStr) ||
+        !Number.isInteger(limitNum) ||
+        limitNum <= 0
+      ) {
+        throw new BadRequestException('limit must be a positive integer');
+      }
+    }
+
+    // Validate specialization
+    if (query.specialization !== undefined) {
+      if (
+        typeof query.specialization !== 'string' ||
+        query.specialization.trim().length === 0
+      ) {
+        throw new BadRequestException(
+          'specialization must be a non-empty string',
+        );
+      }
+    }
+
+    // Validate search
+    if (query.search !== undefined) {
+      if (
+        typeof query.search !== 'string' ||
+        query.search.trim().length === 0
+      ) {
+        throw new BadRequestException('search must be a non-empty string');
+      }
+    }
+
+    // Validate availability
+    let isAvailable: boolean | undefined;
+    if (query.availability !== undefined) {
+      if (query.availability === 'true') {
+        isAvailable = true;
+      } else if (query.availability === 'false') {
+        isAvailable = false;
+      } else {
+        throw new BadRequestException('availability must be a boolean');
+      }
+    }
+
+    const queryBuilder =
+      this.doctorProfilesRepository.createQueryBuilder('doctor');
+
+    if (query.specialization !== undefined) {
+      queryBuilder.andWhere('doctor.specialization ILIKE :specialization', {
+        specialization: `%${query.specialization.trim()}%`,
+      });
+    }
+
+    if (query.search !== undefined) {
+      queryBuilder.andWhere('doctor.fullName ILIKE :search', {
+        search: `%${query.search.trim()}%`,
+      });
+    }
+
+    if (isAvailable !== undefined) {
+      if (isAvailable) {
+        queryBuilder.andWhere("doctor.availability != '{}'::jsonb");
+      } else {
+        queryBuilder.andWhere("doctor.availability = '{}'::jsonb");
+      }
+    }
+
+    // Pagination
+    queryBuilder.skip((pageNum - 1) * limitNum).take(limitNum);
+
+    // Stable sorting by ID
+    queryBuilder.orderBy('doctor.id', 'ASC');
+
+    const doctors = await queryBuilder.getMany();
+
+    return doctors.map((doctor) => {
+      const availabilityStatus =
+        Object.keys(doctor.availability || {}).length > 0;
+      return {
+        id: doctor.id,
+        fullName: doctor.fullName,
+        specialization: doctor.specialization,
+        experience: doctor.experience,
+        consultationFee: doctor.consultationFee,
+        availabilityStatus,
+      };
+    });
+  }
+
+  async getDoctorById(idParam: unknown) {
+    const idStr = String(idParam).trim();
+    const id = Number(idStr);
+    if (!/^\d+$/.test(idStr) || !Number.isInteger(id) || id <= 0) {
+      throw new BadRequestException('invalid doctor ID');
+    }
+
+    const doctor = await this.doctorProfilesRepository.findOne({
+      where: { id },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException('doctor profile not found');
+    }
+
+    const availabilityStatus =
+      Object.keys(doctor.availability || {}).length > 0;
+
+    return {
+      ...doctor,
+      availabilityStatus,
+    };
   }
 
   private validateCreateDto(dto: CreateDoctorProfileDto) {
@@ -102,7 +251,8 @@ export class DoctorService {
       throw new BadRequestException('at least one field is required');
     }
 
-    if (dto.fullName !== undefined) this.validateString(dto.fullName, 'fullName');
+    if (dto.fullName !== undefined)
+      this.validateString(dto.fullName, 'fullName');
     if (dto.specialization !== undefined) {
       this.validateString(dto.specialization, 'specialization');
     }
