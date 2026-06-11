@@ -68,7 +68,9 @@ describe('DoctorController', () => {
         consultationFee: '100.00',
         availabilityStatus: true,
       };
-      jest.spyOn(service, 'getDoctorById').mockResolvedValue(expectedResult);
+      jest
+        .spyOn(service, 'getDoctorById')
+        .mockResolvedValue(expectedResult as any);
 
       const result = await controller.getDoctorById(id);
 
