@@ -60,8 +60,12 @@ export class CreateAvailabilityTables1749600000000 implements MigrationInterface
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('DROP INDEX IF EXISTS "IDX_custom_avail_doctor_date"');
-    await queryRunner.query('DROP INDEX IF EXISTS "IDX_recurring_avail_doctor_day"');
+    await queryRunner.query(
+      'DROP INDEX IF EXISTS "IDX_custom_avail_doctor_date"',
+    );
+    await queryRunner.query(
+      'DROP INDEX IF EXISTS "IDX_recurring_avail_doctor_day"',
+    );
     await queryRunner.query(`
       ALTER TABLE "custom_availability"
       DROP CONSTRAINT "FK_custom_availability_doctor_id"

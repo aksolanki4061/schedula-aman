@@ -78,10 +78,7 @@ export class AvailabilityController {
 
   /** GET /doctor/availability/date?date=YYYY-MM-DD – Get slots for a date */
   @Get('date')
-  getByDate(
-    @Req() req: { user: JwtUser },
-    @Query('date') date: string,
-  ) {
+  getByDate(@Req() req: { user: JwtUser }, @Query('date') date: string) {
     return this.availabilityService.getAvailabilityByDate(req.user.sub, date);
   }
 }

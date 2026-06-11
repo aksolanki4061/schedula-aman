@@ -80,7 +80,9 @@ export class AvailabilityService {
   ): Promise<RecurringAvailability> {
     // Validate day
     if (dto.dayOfWeek < 0 || dto.dayOfWeek > 6) {
-      throw new BadRequestException('dayOfWeek must be between 0 (Sun) and 6 (Sat)');
+      throw new BadRequestException(
+        'dayOfWeek must be between 0 (Sun) and 6 (Sat)',
+      );
     }
 
     // Validate time format and range
@@ -100,12 +102,21 @@ export class AvailabilityService {
       (s) => s.startTime === dto.startTime && s.endTime === dto.endTime,
     );
     if (isDuplicate) {
-      throw new ConflictException('This exact time slot already exists for that day.');
+      throw new ConflictException(
+        'This exact time slot already exists for that day.',
+      );
     }
 
     // Check for overlap
     for (const slot of existing) {
-      if (this.isOverlapping(dto.startTime, dto.endTime, slot.startTime, slot.endTime)) {
+      if (
+        this.isOverlapping(
+          dto.startTime,
+          dto.endTime,
+          slot.startTime,
+          slot.endTime,
+        )
+      ) {
         throw new ConflictException(
           `Time slot overlaps with existing slot ${slot.startTime}–${slot.endTime}`,
         );
@@ -137,17 +148,25 @@ export class AvailabilityService {
     const profile = await this.getDoctorProfile(userId);
     const slot = await this.recurringRepo.findOne({ where: { id } });
 
-    if (!slot) throw new NotFoundException(`Availability slot #${id} not found`);
+    if (!slot)
+      throw new NotFoundException(`Availability slot #${id} not found`);
     if (slot.doctorId !== profile.id) {
-      throw new UnauthorizedException('You can only update your own availability slots');
+      throw new UnauthorizedException(
+        'You can only update your own availability slots',
+      );
     }
 
     const updatedDay = dto.dayOfWeek ?? slot.dayOfWeek;
     const updatedStart = dto.startTime ?? slot.startTime;
     const updatedEnd = dto.endTime ?? slot.endTime;
 
-    if (dto.dayOfWeek !== undefined && (dto.dayOfWeek < 0 || dto.dayOfWeek > 6)) {
-      throw new BadRequestException('dayOfWeek must be between 0 (Sun) and 6 (Sat)');
+    if (
+      dto.dayOfWeek !== undefined &&
+      (dto.dayOfWeek < 0 || dto.dayOfWeek > 6)
+    ) {
+      throw new BadRequestException(
+        'dayOfWeek must be between 0 (Sun) and 6 (Sat)',
+      );
     }
     if (dto.startTime) this.validateTimeFormat(dto.startTime, 'startTime');
     if (dto.endTime) this.validateTimeFormat(dto.endTime, 'endTime');
@@ -159,7 +178,9 @@ export class AvailabilityService {
     });
     for (const s of existing) {
       if (s.id === id) continue;
-      if (this.isOverlapping(updatedStart, updatedEnd, s.startTime, s.endTime)) {
+      if (
+        this.isOverlapping(updatedStart, updatedEnd, s.startTime, s.endTime)
+      ) {
         throw new ConflictException(
           `Updated slot overlaps with existing slot ${s.startTime}–${s.endTime}`,
         );
@@ -172,13 +193,19 @@ export class AvailabilityService {
     return this.recurringRepo.save(slot);
   }
 
-  async deleteRecurring(userId: number, id: number): Promise<{ message: string }> {
+  async deleteRecurring(
+    userId: number,
+    id: number,
+  ): Promise<{ message: string }> {
     const profile = await this.getDoctorProfile(userId);
     const slot = await this.recurringRepo.findOne({ where: { id } });
 
-    if (!slot) throw new NotFoundException(`Availability slot #${id} not found`);
+    if (!slot)
+      throw new NotFoundException(`Availability slot #${id} not found`);
     if (slot.doctorId !== profile.id) {
-      throw new UnauthorizedException('You can only delete your own availability slots');
+      throw new UnauthorizedException(
+        'You can only delete your own availability slots',
+      );
     }
 
     await this.recurringRepo.remove(slot);
@@ -217,11 +244,15 @@ export class AvailabilityService {
       (s) => s.startTime === dto.startTime && s.endTime === dto.endTime,
     );
     if (isDuplicate) {
-      throw new ConflictException('This exact override slot already exists for that date.');
+      throw new ConflictException(
+        'This exact override slot already exists for that date.',
+      );
     }
 
     for (const s of existing) {
-      if (this.isOverlapping(dto.startTime, dto.endTime, s.startTime, s.endTime)) {
+      if (
+        this.isOverlapping(dto.startTime, dto.endTime, s.startTime, s.endTime)
+      ) {
         throw new ConflictException(
           `Override slot overlaps with existing override ${s.startTime}–${s.endTime} on ${dto.date}`,
         );
@@ -251,7 +282,9 @@ export class AvailabilityService {
     slots: Array<{ startTime: string; endTime: string; id: number }>;
   }> {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      throw new BadRequestException('date query param must be in YYYY-MM-DD format');
+      throw new BadRequestException(
+        'date query param must be in YYYY-MM-DD format',
+      );
     }
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {

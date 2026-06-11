@@ -15,17 +15,24 @@ import { CustomAvailability } from './doctor/custom-availability.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // Use DATABASE_URL (full Neon connection string) if available,
-      // otherwise fall back to individual env vars for local dev
+      // Use DATABASE_URL if available (for Neon/production),
+      // otherwise fall back to local DB credentials
       url: process.env.DATABASE_URL,
       host: process.env.DATABASE_URL ? undefined : (process.env.DB_HOST ?? 'localhost'),
       port: process.env.DATABASE_URL ? undefined : Number(process.env.DB_PORT ?? 5432),
       username: process.env.DATABASE_URL ? undefined : (process.env.DB_USERNAME ?? 'postgres'),
-      password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD ?? 'postgres'),
+      password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD ?? 'nama2004'),
       database: process.env.DATABASE_URL ? undefined : (process.env.DB_DATABASE ?? 'schedula'),
-      entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
+      entities: [
+        User,
+        DoctorProfile,
+        PatientProfile,
+        RecurringAvailability,
+        CustomAvailability,
+      ],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
+      // Only enable SSL for remote databases (Neon), not for local PostgreSQL
       ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
     }),
     AuthModule,
@@ -36,3 +43,4 @@ import { CustomAvailability } from './doctor/custom-availability.entity';
   providers: [AppService],
 })
 export class AppModule {}
+

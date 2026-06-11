@@ -22,4 +22,3 @@ import { RecurringAvailability } from './recurring-availability.entity';
   providers: [DoctorService, AvailabilityService],
 })
 export class DoctorModule {}
-
