@@ -8,6 +8,8 @@ import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorProfile } from './doctor/doctor-profile.entity';
 import { PatientProfile } from './patient/patient-profile.entity';
+import { RecurringAvailability } from './doctor/recurring-availability.entity';
+import { CustomAvailability } from './doctor/custom-availability.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { PatientProfile } from './patient/patient-profile.entity';
       username: process.env.DATABASE_URL ? undefined : (process.env.DB_USERNAME ?? 'postgres'),
       password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD ?? 'postgres'),
       database: process.env.DATABASE_URL ? undefined : (process.env.DB_DATABASE ?? 'schedula'),
-      entities: [User, DoctorProfile, PatientProfile],
+      entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
       ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,

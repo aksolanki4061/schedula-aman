@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import { CustomAvailability } from './doctor/custom-availability.entity';
 import { DoctorProfile } from './doctor/doctor-profile.entity';
+import { RecurringAvailability } from './doctor/recurring-availability.entity';
 import { PatientProfile } from './patient/patient-profile.entity';
 import { User } from './users/user.entity';
 
@@ -12,7 +14,7 @@ export default new DataSource({
   username: process.env.DATABASE_URL ? undefined : (process.env.DB_USERNAME ?? 'postgres'),
   password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD ?? 'postgres'),
   database: process.env.DATABASE_URL ? undefined : (process.env.DB_DATABASE ?? 'schedula'),
-  entities: [User, DoctorProfile, PatientProfile],
+  entities: [User, DoctorProfile, PatientProfile, RecurringAvailability, CustomAvailability],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
