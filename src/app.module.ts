@@ -10,6 +10,7 @@ import { DoctorProfile } from './doctor/doctor-profile.entity';
 import { PatientProfile } from './patient/patient-profile.entity';
 import { RecurringAvailability } from './doctor/recurring-availability.entity';
 import { CustomAvailability } from './doctor/custom-availability.entity';
+import { Appointment } from './doctor/appointment.entity';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CustomAvailability } from './doctor/custom-availability.entity';
         PatientProfile,
         RecurringAvailability,
         CustomAvailability,
+        Appointment,
       ],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,

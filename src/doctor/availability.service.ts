@@ -15,6 +15,7 @@ import {
 import { CustomAvailability } from './custom-availability.entity';
 import { DoctorProfile } from './doctor-profile.entity';
 import { RecurringAvailability } from './recurring-availability.entity';
+import { Appointment } from './appointment.entity';
 
 @Injectable()
 export class AvailabilityService {
@@ -25,6 +26,8 @@ export class AvailabilityService {
     private readonly customRepo: Repository<CustomAvailability>,
     @InjectRepository(DoctorProfile)
     private readonly doctorProfileRepo: Repository<DoctorProfile>,
+    @InjectRepository(Appointment)
+    private readonly appointmentRepo: Repository<Appointment>,
   ) {}
 
   // ─────────────────────────────────────────────────────────
@@ -328,5 +331,125 @@ export class AvailabilityService {
         endTime: s.endTime,
       })),
     };
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // SLOT GENERATION FOR PATIENTS
+  // ─────────────────────────────────────────────────────────
+
+  async getAvailableSlotsForPatient(
+    doctorId: number,
+    dateString: string,
+    durationMinutes: number,
+  ) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      throw new BadRequestException('date query param must be in YYYY-MM-DD format');
+    }
+    const parsedDate = new Date(dateString);
+    if (isNaN(parsedDate.getTime())) {
+      throw new BadRequestException('Invalid date provided');
+    }
+
+    if (isNaN(durationMinutes) || durationMinutes <= 0) {
+      throw new BadRequestException('Invalid duration provided');
+    }
+
+    const doctor = await this.doctorProfileRepo.findOne({ where: { id: doctorId } });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+
+    // Past date check
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const queryDate = new Date(parsedDate);
+    queryDate.setHours(0, 0, 0, 0);
+
+    if (queryDate < today) {
+      throw new BadRequestException('Cannot fetch slots for a past date');
+    }
+
+    // 1. Fetch Availability
+    let availableBlocks: Array<{ startTime: string; endTime: string }> = [];
+    const customSlots = await this.customRepo.find({
+      where: { doctorId, date: dateString },
+      order: { startTime: 'ASC' },
+    });
+
+    if (customSlots.length > 0) {
+      availableBlocks = customSlots;
+    } else {
+      const dayOfWeek = parsedDate.getDay();
+      const recurringSlots = await this.recurringRepo.find({
+        where: { doctorId, dayOfWeek },
+        order: { startTime: 'ASC' },
+      });
+      availableBlocks = recurringSlots;
+    }
+
+    if (availableBlocks.length === 0) {
+      return { message: 'No availability for this date', slots: [] };
+    }
+
+    // 2. Fetch Appointments
+    const appointments = await this.appointmentRepo.find({
+      where: { doctorId, date: dateString, status: 'booked' },
+    });
+
+    // 3. Generate slots
+    const generatedSlots: Array<{ startTime: string; endTime: string }> = [];
+    const now = new Date();
+    const isToday = queryDate.getTime() === today.getTime();
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const currentTimeStr = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
+
+    for (const block of availableBlocks) {
+      let currentSlotStart = block.startTime;
+
+      while (true) {
+        // Calculate end of the slot
+        const [startHr, startMin] = currentSlotStart.split(':').map(Number);
+        let endMin = startMin + durationMinutes;
+        let endHr = startHr + Math.floor(endMin / 60);
+        endMin = endMin % 60;
+
+        const endHrStr = endHr.toString().padStart(2, '0');
+        const endMinStr = endMin.toString().padStart(2, '0');
+        const currentSlotEnd = `${endHrStr}:${endMinStr}`;
+
+        if (currentSlotEnd > block.endTime) {
+          break; // Doesn't fit in the block entirely
+        }
+
+        // Check if slot is in the past (if today)
+        let isPast = false;
+        if (isToday && currentSlotStart < currentTimeStr) {
+           isPast = true;
+        }
+
+        // Check overlaps with appointments
+        let isBooked = false;
+        for (const appt of appointments) {
+          if (this.isOverlapping(currentSlotStart, currentSlotEnd, appt.startTime, appt.endTime)) {
+            isBooked = true;
+            break;
+          }
+        }
+
+        if (!isPast && !isBooked) {
+          generatedSlots.push({
+            startTime: currentSlotStart,
+            endTime: currentSlotEnd,
+          });
+        }
+
+        currentSlotStart = currentSlotEnd;
+      }
+    }
+
+    if (generatedSlots.length === 0) {
+      return { message: 'No slots available', slots: [] };
+    }
+
+    return { date: dateString, duration: durationMinutes, slots: generatedSlots };
   }
 }

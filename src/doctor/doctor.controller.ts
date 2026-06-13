@@ -19,12 +19,16 @@ import {
   UpdateDoctorProfileDto,
 } from './doctor-profile.dto';
 import { DoctorService } from './doctor.service';
+import { AvailabilityService } from './availability.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.DOCTOR)
 @Controller('doctor')
 export class DoctorController {
-  constructor(private readonly doctorService: DoctorService) {}
+  constructor(
+    private readonly doctorService: DoctorService,
+    private readonly availabilityService: AvailabilityService,
+  ) {}
 
   @Post('profile')
   createProfile(
@@ -72,5 +76,16 @@ export class DoctorController {
   @Roles(UserRole.PATIENT, UserRole.DOCTOR)
   getDoctorById(@Param('id') id: string) {
     return this.doctorService.getDoctorById(id);
+  }
+
+  @Get(':id/slots')
+  @Roles(UserRole.PATIENT, UserRole.DOCTOR)
+  getDoctorSlots(
+    @Param('id') id: string,
+    @Query('date') date: string,
+    @Query('duration') duration?: string,
+  ) {
+    const durationMinutes = duration ? parseInt(duration, 10) : 15;
+    return this.availabilityService.getAvailableSlotsForPatient(+id, date, durationMinutes);
   }
 }
